@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# Simple script preventing direct push to specified branches
+# Specify branches you would like to protect
+# E.g. protected_branches=('master' 'main')
+
+# To use githooks:
+# - move desired hook to .git/hooks directory inside your project root directory
+# - make script executable by running: 
+#   chmod +x /path_to_your_project_root_directory/.git/hooks/pre-push
+
+protected_branches=()
+current_branch="$(git symbolic-ref HEAD | cut -d '/' -f 3)"
+
+RED='\033[0;31m'
+
+for branch in "${protected_branches[@]}"; do
+    if [ "${current_branch}" == "${branch}" ]; then
+        echo -e "${RED}You are trying to push directly to protected branch: ${current_branch}"
+        echo -e "${RED}This action is not allowed"
+        exit 1
+    fi
+done

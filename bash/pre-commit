@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# Simple script to execute set of defined commands before commit
+# Specify array of commands to execute required for commit testing.
+# E.g. commands=('pytest' 'npm run test')
+
+# To use githooks:
+# - move desired hook to .git/hooks directory inside your project root directory
+# - make script executable by running: 
+#   chmod +x /path_to_your_project_root_directory/.git/hooks/pre-commit
+
+commands=()
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+
+echo -e "${GREEN}Starting pre-commit checks"
+
+for command in "${commands[@]}"; do
+    echo -e "${GREEN}Executing ${command}"
+    
+    "${command}"
+
+    if [ "$?" -eq 0 ]; then
+        echo -e "${GREEN}All tests passed, commiting changes"
+    elif [ "$?" -ne 0 ]; then
+        echo -e "${RED}Checks failed, cannot commit changes"
+        exit 1
+fi
+done
